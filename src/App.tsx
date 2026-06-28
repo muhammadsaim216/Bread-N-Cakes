@@ -310,6 +310,7 @@ export default function App() {
                 setActivePage={setActivePage}
                 setOrderTrackingId={setOrderTrackingId}
                 orderNote={orderNote}
+                user={user}
               />
             )}
             {activePage === 'order-tracking' && (

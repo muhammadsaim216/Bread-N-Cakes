@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Search, MapPin, Truck, CheckCircle2, Clock, RotateCcw, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Search, MapPin, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
 import { Order, PageType } from '../types';
 
 interface OrderTrackingProps {
@@ -11,11 +11,58 @@ interface OrderTrackingProps {
 
 export default function OrderTracking({ orderTrackingId, orders, setActivePage }: OrderTrackingProps) {
   const [searchId, setSearchId] = useState(orderTrackingId || '');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [trackedOrder, setTrackedOrder] = useState<Order | null>(null);
 
-  const trackedOrder = useMemo(() => {
-    if (!searchId) return null;
-    return orders.find((o) => o.id.toUpperCase() === searchId.trim().toUpperCase());
-  }, [orders, searchId]);
+  useEffect(() => {
+    if (!searchId) {
+      setTrackedOrder(null);
+      setErrorMsg(null);
+      return;
+    }
+
+    const fetchTrackedOrder = async () => {
+      setLoading(true);
+      setErrorMsg(null);
+      try {
+        const res = await fetch(`/api/orders/track/${searchId.trim()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setTrackedOrder(data.order);
+        } else {
+          // Fallback to local array
+          const localMatch = orders.find(
+            (o) => o.id.toUpperCase() === searchId.trim().toUpperCase()
+          );
+          if (localMatch) {
+            setTrackedOrder(localMatch);
+          } else {
+            setTrackedOrder(null);
+            setErrorMsg('No order ticket found matching this ticket number.');
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching order tracking:', err);
+        const localMatch = orders.find(
+          (o) => o.id.toUpperCase() === searchId.trim().toUpperCase()
+        );
+        if (localMatch) {
+          setTrackedOrder(localMatch);
+        } else {
+          setErrorMsg('Failed to connect to the tracking server.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const delayDebounceFn = setTimeout(() => {
+      fetchTrackedOrder();
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchId, orders]);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8" id="order-tracking-view">
@@ -26,7 +73,7 @@ export default function OrderTracking({ orderTrackingId, orders, setActivePage }
           Track Your Fresh Sourdough
         </h1>
         <p className="mt-2 font-sans text-xs sm:text-sm text-stone-500">
-          Enter your order ticket number (e.g. BNC-48902) below to view your bread’s proofing, baking, and delivery status in real-time.
+          Enter your order ticket number (e.g. BNC-48902 or your newly generated checkout ID) to view baking, decorating, and delivery status.
         </p>
       </div>
 
@@ -35,7 +82,7 @@ export default function OrderTracking({ orderTrackingId, orders, setActivePage }
         <div className="relative">
           <input
             type="text"
-            placeholder="Enter Order ID (e.g. BNC-48902)..."
+            placeholder="Enter Order ID (e.g. BNC-48902 or your checkout ID)..."
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
             className="w-full rounded-2xl border border-stone-200 bg-stone-50/50 py-3 pl-4 pr-12 font-mono text-xs sm:text-sm uppercase focus:border-orange-500 focus:bg-white focus:outline-none"
@@ -44,8 +91,14 @@ export default function OrderTracking({ orderTrackingId, orders, setActivePage }
         </div>
       </div>
 
+      {loading && (
+        <div className="text-center py-12 font-sans text-stone-500 text-xs animate-pulse">
+          Retrieving live bakehouse telemetry...
+        </div>
+      )}
+
       {/* TRACKING CONTENT */}
-      {trackedOrder ? (
+      {!loading && trackedOrder ? (
         <div className="space-y-8">
           {/* Order Header info */}
           <div className="rounded-3xl bg-stone-900 text-white p-6 sm:p-8 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -139,29 +192,33 @@ export default function OrderTracking({ orderTrackingId, orders, setActivePage }
           </div>
         </div>
       ) : (
-        <div className="text-center py-16 bg-stone-50 rounded-3xl border border-stone-100 max-w-lg mx-auto">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 text-orange-600 mb-3">
-            <AlertTriangle size={20} className="animate-bounce" />
+        !loading && (
+          <div className="text-center py-16 bg-stone-50 rounded-3xl border border-stone-100 max-w-lg mx-auto">
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 text-orange-600 mb-3">
+              <AlertTriangle size={20} className="animate-bounce" />
+            </div>
+            <h3 className="font-serif text-base font-bold text-stone-900">
+              {errorMsg || 'No active ticket tracked'}
+            </h3>
+            <p className="font-sans text-xs text-stone-500 max-w-xs mx-auto mt-1">
+              Ensure your order ticket begins with "BNC-" (e.g. Try searching **BNC-48902** which was pre-baked for demonstration, or complete checking out to get a live ticket).
+            </p>
+            <div className="mt-4 flex justify-center gap-4">
+              <button
+                onClick={() => setSearchId('BNC-48902')}
+                className="rounded-full bg-stone-900 px-5 py-2 font-sans text-xs font-bold text-white hover:bg-stone-800"
+              >
+                Demo Ticket BNC-48902
+              </button>
+              <button
+                onClick={() => setActivePage('shop')}
+                className="rounded-full border border-stone-200 px-5 py-2 font-sans text-xs font-bold text-stone-600 hover:border-orange-500 hover:text-orange-600 bg-white"
+              >
+                Place a New Order
+              </button>
+            </div>
           </div>
-          <h3 className="font-serif text-base font-bold text-stone-900">No active ticket tracked</h3>
-          <p className="font-sans text-xs text-stone-500 max-w-xs mx-auto mt-1">
-            Ensure your order ticket begins with "BNC-" (e.g. Try searching **BNC-48902** which was pre-baked for demonstration).
-          </p>
-          <div className="mt-4 flex justify-center gap-4">
-            <button
-              onClick={() => setSearchId('BNC-48902')}
-              className="rounded-full bg-stone-900 px-5 py-2 font-sans text-xs font-bold text-white hover:bg-stone-800"
-            >
-              Demo Ticket BNC-48902
-            </button>
-            <button
-              onClick={() => setActivePage('shop')}
-              className="rounded-full border border-stone-200 px-5 py-2 font-sans text-xs font-bold text-stone-600 hover:border-orange-500 hover:text-orange-600 bg-white"
-            >
-              Place a New Order
-            </button>
-          </div>
-        </div>
+        )
       )}
     </div>
   );

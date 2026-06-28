@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Star, Upload, MessageSquare, CheckCircle2, SlidersHorizontal, Image as ImageIcon } from 'lucide-react';
 import { REVIEWS } from '../data';
 import { Review } from '../types';
 
 export default function Reviews() {
-  const [reviews, setReviews] = useState<Review[]>(REVIEWS);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(true);
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | null>(null);
   const [isSubmitSuccess, setIsSubmitSuccess] = useState(false);
 
@@ -16,6 +17,40 @@ export default function Reviews() {
   const [formComment, setFormComment] = useState('');
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
+
+  // Fetch reviews on mount
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch('/api/reviews');
+        if (res.ok) {
+          const data = await res.json();
+          const mappedReviews: Review[] = data.reviews.map((r: any) => ({
+            id: `r-${r.id}`,
+            productId: r.productId,
+            author: r.userName,
+            avatar: r.avatar || undefined,
+            rating: r.rating,
+            date: r.createdAt ? r.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+            title: r.title,
+            comment: r.comment,
+            verified: r.verified,
+            likes: r.likes,
+          }));
+          setReviews(mappedReviews);
+        } else {
+          // Fallback if API fails
+          setReviews(REVIEWS);
+        }
+      } catch (err) {
+        console.error('Error loading reviews:', err);
+        setReviews(REVIEWS);
+      } finally {
+        setIsLoadingReviews(false);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -49,33 +84,57 @@ export default function Reviews() {
     }
   };
 
-  const handleSubmitReview = (e: React.FormEvent) => {
+  const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName || !formTitle || !formComment) return;
 
-    const newReview: Review = {
-      id: `r-${Date.now()}`,
-      author: formName,
-      avatar: uploadedImagePreview || undefined,
-      rating: formRating,
-      date: new Date().toISOString().split('T')[0],
-      title: formTitle,
-      comment: formComment,
-      verified: true,
-      likes: 0,
-    };
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: 'all',
+          userName: formName,
+          avatar: uploadedImagePreview || null,
+          rating: formRating,
+          title: formTitle,
+          comment: formComment,
+        }),
+      });
 
-    setReviews([newReview, ...reviews]);
-    setIsSubmitSuccess(true);
+      if (response.ok) {
+        const data = await response.json();
+        const r = data.review;
+        const newReview: Review = {
+          id: `r-${r.id}`,
+          productId: r.productId,
+          author: r.userName,
+          avatar: r.avatar || undefined,
+          rating: r.rating,
+          date: r.createdAt ? r.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+          title: r.title,
+          comment: r.comment,
+          verified: r.verified,
+          likes: r.likes,
+        };
 
-    // Reset Form
-    setFormName('');
-    setFormRating(5);
-    setFormTitle('');
-    setFormComment('');
-    setUploadedImagePreview(null);
+        setReviews([newReview, ...reviews]);
+        setIsSubmitSuccess(true);
 
-    setTimeout(() => setIsSubmitSuccess(false), 3000);
+        // Reset Form
+        setFormName('');
+        setFormRating(5);
+        setFormTitle('');
+        setFormComment('');
+        setUploadedImagePreview(null);
+
+        setTimeout(() => setIsSubmitSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error('Error posting review:', err);
+    }
   };
 
   return (

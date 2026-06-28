@@ -17,6 +17,7 @@ interface CheckoutProps {
   setActivePage: (page: PageType) => void;
   setOrderTrackingId: (id: string) => void;
   orderNote: string;
+  user?: any;
 }
 
 export default function Checkout({
@@ -32,6 +33,7 @@ export default function Checkout({
   setActivePage,
   setOrderTrackingId,
   orderNote,
+  user,
 }: CheckoutProps) {
   const [step, setStep] = useState<number>(1);
 
@@ -69,7 +71,7 @@ export default function Checkout({
     setStep(step - 1);
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!cardName || !cardNumber || !cardExpiry || !cardCvc) {
       toast.error('Please fill out all mock credit card details.');
       return;
@@ -77,10 +79,50 @@ export default function Checkout({
 
     setIsSubmitting(true);
 
-    // Simulate short network delay
-    setTimeout(() => {
-      const orderId = `BNC-${Math.floor(10000 + Math.random() * 90000)}`;
-      
+    const orderId = `BNC-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    const orderPayload = {
+      orderIdString: orderId,
+      custName,
+      custEmail,
+      custPhone,
+      deliveryType,
+      street: deliveryType === 'delivery' ? street : null,
+      city: deliveryType === 'delivery' ? city : null,
+      zipCode: deliveryType === 'delivery' ? zip : null,
+      notes: orderNote || null,
+      paymentMethod: `Visa ending in ${cardNumber.slice(-4) || '4242'}`,
+      total,
+      items: cart.map((item) => ({
+        productId: item.product.id,
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price,
+        size: item.size,
+        flavor: item.flavor || null,
+        image: item.product.image,
+      })),
+    };
+
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (user?.token) {
+        headers['Authorization'] = `Bearer ${user.token}`;
+      }
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save order to PostgreSQL.');
+      }
+
       const newOrder: Order = {
         id: orderId,
         date: new Date().toISOString().split('T')[0],
@@ -118,7 +160,11 @@ export default function Checkout({
       onClearCart();
       setIsSubmitting(false);
       setActivePage('order-tracking');
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred while placing your order. Please retry.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
