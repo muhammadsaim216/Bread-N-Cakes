@@ -1,0 +1,6 @@
+{
+  "name": "Bread N Cakes",
+  "description": "An exquisite artisanal bakery and decadent cake boutique ecommerce application with live baking timers, smart product recommendations, secure custom ordering, and a loyalty club dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
