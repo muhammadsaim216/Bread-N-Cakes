@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { ShoppingBag, ArrowRight, Heart, Sparkles, Star, Calendar, ShieldCheck, Flame, Leaf } from 'lucide-react';
 import { Product, PageType } from '../types';
-import { PRODUCTS, CATEGORIES } from '../data';
+import { PRODUCTS as FALLBACK_PRODUCTS, CATEGORIES as FALLBACK_CATEGORIES } from '../data';
 
 interface HomeProps {
   setActivePage: (page: PageType) => void;
@@ -10,6 +10,8 @@ interface HomeProps {
   onAddToCart: (product: Product, quantity: number, size: string, flavor?: string) => void;
   onAddToWishlist: (product: Product) => void;
   wishlist: Product[];
+  products?: Product[];
+  categories?: typeof FALLBACK_CATEGORIES;
 }
 
 export default function Home({
@@ -19,10 +21,12 @@ export default function Home({
   onAddToCart,
   onAddToWishlist,
   wishlist,
+  products = FALLBACK_PRODUCTS,
+  categories = FALLBACK_CATEGORIES,
 }: HomeProps) {
   // Filter bestsellers and featured
-  const bestSellers = PRODUCTS.filter((p) => p.bestSeller).slice(0, 3);
-  const featured = PRODUCTS.filter((p) => p.featured).slice(0, 4);
+  const bestSellers = products.filter((p) => p.bestSeller).slice(0, 3);
+  const featured = products.filter((p) => p.featured).slice(0, 4);
 
   const isItemInWishlist = (id: string) => wishlist.some((item) => item.id === id);
 
@@ -149,8 +153,8 @@ export default function Home({
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {CATEGORIES.slice(0, 3).map((cat) => (
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {categories.map((cat) => (
             <div
               key={cat.id}
               onClick={() => handleCategoryClick(cat.id)}
@@ -167,34 +171,6 @@ export default function Home({
                 <span className="font-mono text-[10px] font-bold text-orange-400 uppercase tracking-widest">{cat.count} Treats</span>
                 <h3 className="font-serif text-xl font-bold text-white mt-1">{cat.name}</h3>
                 <p className="font-sans text-xs text-stone-200 mt-2 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {cat.description}
-                </p>
-                <div className="mt-4 flex items-center space-x-1 font-sans text-xs font-semibold text-orange-400">
-                  <span>Shop Collection</span>
-                  <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {CATEGORIES.slice(3, 5).map((cat) => (
-            <div
-              key={cat.id}
-              onClick={() => handleCategoryClick(cat.id)}
-              className="group relative h-64 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
-            >
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-550 group-hover:scale-110"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-900/30 to-transparent" />
-              <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                <span className="font-mono text-[10px] font-bold text-orange-400 uppercase tracking-widest">{cat.count} Treats</span>
-                <h3 className="font-serif text-xl font-bold text-white mt-1">{cat.name}</h3>
-                <p className="font-sans text-xs text-stone-200 mt-2 line-clamp-2">
                   {cat.description}
                 </p>
                 <div className="mt-4 flex items-center space-x-1 font-sans text-xs font-semibold text-orange-400">
@@ -278,10 +254,16 @@ export default function Home({
                     referrerPolicy="no-referrer"
                   />
                   {/* Absolute Badge */}
-                  <div className="absolute left-3 top-3 flex space-x-1.5">
+                  <div className="absolute left-3 top-3 flex flex-col gap-1">
                     {product.bestSeller && (
-                      <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-[9px] font-bold text-white uppercase tracking-wider">
-                        Bestseller
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2.5 py-0.5 text-[9px] font-bold text-stone-950 uppercase tracking-wider shadow-sm">
+                        <Sparkles size={8} className="fill-stone-950 text-stone-950" />
+                        <span>Bestseller</span>
+                      </span>
+                    )}
+                    {product.isNew && (
+                      <span className="rounded-full bg-orange-600 px-2.5 py-0.5 text-[9px] font-bold text-white uppercase tracking-wider shadow-sm w-fit">
+                        New
                       </span>
                     )}
                   </div>
@@ -391,6 +373,20 @@ export default function Home({
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
                     referrerPolicy="no-referrer"
                   />
+                  {/* Absolute Badge */}
+                  <div className="absolute left-2.5 top-2.5 flex flex-col gap-1">
+                    {product.bestSeller && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[8px] font-bold text-stone-950 uppercase tracking-wider shadow-sm w-fit">
+                        <Sparkles size={8} className="fill-stone-950 text-stone-950" />
+                        <span>Bestseller</span>
+                      </span>
+                    )}
+                    {product.isNew && (
+                      <span className="rounded-full bg-orange-600 px-2 py-0.5 text-[8px] font-bold text-white uppercase tracking-wider shadow-sm w-fit">
+                        New
+                      </span>
+                    )}
+                  </div>
                   {/* Wishlist Button */}
                   <button
                     onClick={() => onAddToWishlist(product)}

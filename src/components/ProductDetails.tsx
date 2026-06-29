@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ShoppingBag, Star, ArrowLeft, Check, Sparkles, Scale, Info, Share2, Plus, Minus } from 'lucide-react';
 import { Product, PageType } from '../types';
-import { PRODUCTS, REVIEWS } from '../data';
+import { PRODUCTS as FALLBACK_PRODUCTS, REVIEWS } from '../data';
 
 interface ProductDetailsProps {
   productId: string | null;
@@ -11,6 +11,7 @@ interface ProductDetailsProps {
   onAddToCart: (product: Product, quantity: number, size: string, flavor?: string) => void;
   onAddToWishlist: (product: Product) => void;
   wishlist: Product[];
+  products?: Product[];
 }
 
 export default function ProductDetails({
@@ -20,14 +21,15 @@ export default function ProductDetails({
   onAddToCart,
   onAddToWishlist,
   wishlist,
+  products = FALLBACK_PRODUCTS,
 }: ProductDetailsProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'nutrition' | 'reviews'>('details');
   const [quantity, setQuantity] = useState<number>(1);
 
   // Retrieve product
   const product = useMemo(() => {
-    return PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
-  }, [productId]);
+    return products.find((p) => p.id === productId) || products[0];
+  }, [productId, products]);
 
   const [mainImage, setMainImage] = useState<string>(product.image);
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0]);
@@ -46,8 +48,8 @@ export default function ProductDetails({
 
   // Filter related bakes
   const relatedProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 3);
-  }, [product]);
+    return products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 3);
+  }, [product, products]);
 
   // Filter reviews for this product
   const productReviews = useMemo(() => {

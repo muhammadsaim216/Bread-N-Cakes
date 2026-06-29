@@ -9,7 +9,79 @@ export const users = pgTable('users', {
   name: text('name'),
   avatar: text('avatar'),
   loyaltyPoints: integer('loyalty_points').default(0).notNull(),
+  role: text('role').default('customer').notNull(), // 'customer' | 'admin' | 'baker' | 'decorator'
   createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Profiles table (user requested separate profiles table)
+export const profiles = pgTable('profiles', {
+  id: serial('id').primaryKey(),
+  uid: text('uid').notNull().unique(), // Firebase Auth UID
+  email: text('email').notNull(),
+  name: text('name'),
+  avatar: text('avatar'),
+  loyaltyPoints: integer('loyalty_points').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// User Roles table (user requested separate user_roles table)
+export const userRoles = pgTable('user_roles', {
+  id: serial('id').primaryKey(),
+  uid: text('uid').notNull().unique(), // Firebase Auth UID
+  role: text('role').default('customer').notNull(), // 'customer' | 'admin' | 'baker' | 'decorator'
+  assignedAt: timestamp('assigned_at').defaultNow().notNull(),
+});
+
+// Categories table
+export const categories = pgTable('categories', {
+  id: text('id').primaryKey(), // e.g. 'cakes', 'breads', 'pastries', 'custom-orders'
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  image: text('image').notNull(),
+  count: integer('count').default(0).notNull(),
+});
+
+// Products table
+export const products = pgTable('products', {
+  id: text('id').primaryKey(), // e.g. '1', '2', etc.
+  name: text('name').notNull(),
+  category: text('category').references(() => categories.id).notNull(),
+  price: real('price').notNull(),
+  description: text('description').notNull(),
+  longDescription: text('long_description'),
+  image: text('image').notNull(),
+  images: text('images').notNull(), // JSON string representation of string[]
+  dietary: text('dietary').notNull(), // JSON string representation of string[]
+  rating: real('rating').default(5.0).notNull(),
+  reviewsCount: integer('reviews_count').default(0).notNull(),
+  sizes: text('sizes').notNull(), // JSON string representation of string[]
+  flavors: text('flavors'), // JSON string representation of string[]
+  ingredients: text('ingredients').notNull(), // JSON string representation of string[]
+  nutritionalInfo: text('nutritional_info').notNull(), // JSON string representation of object
+  featured: boolean('featured').default(false).notNull(),
+  bestSeller: boolean('best_seller').default(false).notNull(),
+  isNew: boolean('is_new').default(false).notNull(),
+});
+
+// Gallery Items table
+export const galleryItems = pgTable('gallery_items', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  category: text('category').notNull(), // e.g. 'wedding', 'birthday', 'daily'
+  image: text('image').notNull(),
+});
+
+// Blog Posts table
+export const blogPosts = pgTable('blog_posts', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  excerpt: text('excerpt').notNull(),
+  content: text('content').notNull(),
+  author: text('author').notNull(),
+  date: text('date').notNull(),
+  readTime: text('read_time').notNull(),
+  image: text('image').notNull(),
+  category: text('category').notNull(),
 });
 
 // Orders table
@@ -77,3 +149,15 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
     references: [orders.id],
   }),
 }));
+
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  products: many(products),
+}));
+
+export const productsRelations = relations(products, ({ one }) => ({
+  category: one(categories, {
+    fields: [products.category],
+    references: [categories.id],
+  }),
+}));
+

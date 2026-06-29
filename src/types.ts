@@ -21,6 +21,7 @@ export interface Product {
   };
   featured?: boolean;
   bestSeller?: boolean;
+  isNew?: boolean;
 }
 
 export interface CartItem {
