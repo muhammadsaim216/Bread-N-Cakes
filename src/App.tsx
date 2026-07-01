@@ -98,17 +98,10 @@ export default function App() {
   };
 
   // Cart and Wishlist states
-  const [cart, setCart] = useState<CartItem[]>([
-    {
-      product: PRODUCTS[0], // pre-populate with sourdough
-      quantity: 1,
-      size: 'Standard Loaf (800g)',
-      flavor: 'Classic Country',
-    },
-  ]);
-  const [wishlist, setWishlist] = useState<Product[]>([PRODUCTS[1], PRODUCTS[5]]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
 
-  // User Session (Initialized as logged-in by default for excellent UX)
+  // User Session (null = not logged in, shows Login button)
   const [user, setUser] = useState<{
     name: string;
     email: string;
@@ -121,18 +114,10 @@ export default function App() {
       city: string;
       zipCode: string;
     }[];
-  } | null>({
-    name: 'Samantha Reyes',
-    email: 'samantha.reyes@gmail.com',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
-    loyaltyPoints: 350,
-    savedAddresses: [
-      { id: 'addr-1', label: 'Home Address', street: '452 Elm Street, Apt 3B', city: 'San Francisco', zipCode: '94102' },
-    ],
-  });
+  } | null>(null);
 
-  // Orders State (Prepopulated with mock data)
-  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
+  // Orders State (empty until user logs in and fetches real orders)
+  const [orders, setOrders] = useState<Order[]>([]);
 
   // Cart configuration states
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
