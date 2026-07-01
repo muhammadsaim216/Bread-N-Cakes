@@ -1,9 +1,9 @@
 {
-  "projectId": "premium-basis-fms1d",
-  "appId": "1:269796483616:web:98eff9b324a4bdc43c5245",
-  "apiKey": "AIzaSyCI7xTItf4l1ymaw2coGGyZV71f36ZoHXE",
-  "authDomain": "premium-basis-fms1d.firebaseapp.com",
-  "storageBucket": "premium-basis-fms1d.firebasestorage.app",
-  "messagingSenderId": "269796483616",
-  "measurementId": ""
+  "apiKey": "AIzaSyCe9E69w6p7FRfOkGcw5hUoZDNy4uo6eIE",
+  "authDomain": "bread-n-cakes.firebaseapp.com",
+  "projectId": "bread-n-cakes",
+  "storageBucket": "bread-n-cakes.firebasestorage.app",
+  "messagingSenderId": "1043904285942",
+  "appId": "1:1043904285942:web:4f541a4f46c7486370f0d7",
+  "measurementId": "G-PJVH87C82W"
 }
