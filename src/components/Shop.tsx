@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, SlidersHorizontal, ArrowUpDown, Check, RotateCcw, Heart, ShoppingBag, Star, Sparkles } from 'lucide-react';
 import { Product, PageType } from '../types';
-import { PRODUCTS, CATEGORIES } from '../data';
+import { PRODUCTS as FALLBACK_PRODUCTS, CATEGORIES as FALLBACK_CATEGORIES } from '../data';
 
 interface ShopProps {
   setActivePage: (page: PageType) => void;
@@ -12,6 +12,8 @@ interface ShopProps {
   onAddToCart: (product: Product, quantity: number, size: string, flavor?: string) => void;
   onAddToWishlist: (product: Product) => void;
   wishlist: Product[];
+  products?: Product[];
+  categories?: typeof FALLBACK_CATEGORIES;
 }
 
 export default function Shop({
@@ -22,6 +24,8 @@ export default function Shop({
   onAddToCart,
   onAddToWishlist,
   wishlist,
+  products = FALLBACK_PRODUCTS,
+  categories = FALLBACK_CATEGORIES,
 }: ShopProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [dietaryFilters, setDietaryFilters] = useState<string[]>([]);
@@ -53,7 +57,7 @@ export default function Shop({
   };
 
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return products.filter((product) => {
       // Search
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -141,10 +145,10 @@ export default function Shop({
                 }`}
               >
                 <span>All Categories</span>
-                <span className="font-mono text-[10px] text-stone-400">{PRODUCTS.length}</span>
+                <span className="font-mono text-[10px] text-stone-400">{products.length}</span>
               </button>
-              {CATEGORIES.map((cat) => {
-                const count = PRODUCTS.filter((p) => p.category === cat.id).length;
+              {categories.map((cat) => {
+                const count = products.filter((p) => p.category === cat.id).length;
                 return (
                   <button
                     key={cat.id}
@@ -217,7 +221,7 @@ export default function Shop({
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-stone-100 pb-4 gap-4">
             <div className="font-sans text-xs text-stone-500">
               Showing <span className="font-bold text-stone-800">{filteredProducts.length}</span> of{' '}
-              <span className="font-bold text-stone-800">{PRODUCTS.length}</span> signature bakes
+              <span className="font-bold text-stone-800">{products.length}</span> signature bakes
             </div>
 
             <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-3">
@@ -261,7 +265,7 @@ export default function Shop({
               )}
               {selectedCategoryId && (
                 <span className="inline-flex items-center rounded-full bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-600">
-                  {CATEGORIES.find((c) => c.id === selectedCategoryId)?.name}
+                  {categories.find((c) => c.id === selectedCategoryId)?.name}
                 </span>
               )}
               {maxPrice < 60 && (
@@ -315,6 +319,20 @@ export default function Shop({
                             {diet === 'gluten-free' ? 'GF' : diet}
                           </span>
                         ))}
+                      </div>
+                      {/* Best Seller or New Badges */}
+                      <div className="absolute left-3 bottom-3 flex flex-wrap gap-1">
+                        {product.bestSeller && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/95 backdrop-blur-md px-2.5 py-1 text-[9px] font-bold text-stone-950 uppercase tracking-wider shadow-sm">
+                            <Sparkles size={8} className="fill-stone-950 text-stone-950" />
+                            <span>Best Seller</span>
+                          </span>
+                        )}
+                        {product.isNew && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-orange-600/95 backdrop-blur-md px-2.5 py-1 text-[9px] font-bold text-white uppercase tracking-wider shadow-sm">
+                            <span>New</span>
+                          </span>
+                        )}
                       </div>
                       {/* Wishlist Icon */}
                       <button
@@ -421,10 +439,10 @@ export default function Shop({
                         selectedCategoryId === null ? 'bg-orange-50 text-orange-600' : 'bg-stone-50 text-stone-600'
                       }`}
                     >
-                      All ({PRODUCTS.length})
+                      All ({products.length})
                     </button>
-                    {CATEGORIES.map((cat) => {
-                      const count = PRODUCTS.filter((p) => p.category === cat.id).length;
+                    {categories.map((cat) => {
+                      const count = products.filter((p) => p.category === cat.id).length;
                       return (
                         <button
                           key={cat.id}

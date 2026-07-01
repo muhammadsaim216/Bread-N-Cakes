@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PageType, CartItem, Product, Order } from './types';
-import { PRODUCTS, MOCK_ORDERS } from './data';
+import { PRODUCTS, CATEGORIES, MOCK_ORDERS } from './data';
 import { toast, ToastEventDetail } from './utils/toast';
 
 // Component imports
@@ -29,6 +29,38 @@ export default function App() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>('1');
   const [orderTrackingId, setOrderTrackingId] = useState<string | null>('BNC-48902');
+
+  const [dbProducts, setDbProducts] = useState<Product[]>(PRODUCTS);
+  const [dbCategories, setDbCategories] = useState<typeof CATEGORIES>(CATEGORIES);
+
+  useEffect(() => {
+    async function fetchDbData() {
+      try {
+        const prodRes = await fetch('/api/products');
+        if (prodRes.ok) {
+          const prodData = await prodRes.json();
+          if (prodData.products && prodData.products.length > 0) {
+            setDbProducts(prodData.products);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch products from DB:', err);
+      }
+
+      try {
+        const catRes = await fetch('/api/categories');
+        if (catRes.ok) {
+          const catData = await catRes.json();
+          if (catData.categories && catData.categories.length > 0) {
+            setDbCategories(catData.categories);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch categories from DB:', err);
+      }
+    }
+    fetchDbData();
+  }, []);
 
   // Toast notifications state
   interface ToastItem {
@@ -236,6 +268,8 @@ export default function App() {
                 onAddToCart={handleAddToCart}
                 onAddToWishlist={handleAddToWishlist}
                 wishlist={wishlist}
+                products={dbProducts}
+                categories={dbCategories}
               />
             )}
             {activePage === 'shop' && (
@@ -247,12 +281,16 @@ export default function App() {
                 onAddToCart={handleAddToCart}
                 onAddToWishlist={handleAddToWishlist}
                 wishlist={wishlist}
+                products={dbProducts}
+                categories={dbCategories}
               />
             )}
             {activePage === 'categories' && (
               <Categories
                 setActivePage={setActivePage}
                 setSelectedCategoryId={setSelectedCategoryId}
+                categories={dbCategories}
+                products={dbProducts}
               />
             )}
             {activePage === 'product-details' && (
@@ -263,6 +301,7 @@ export default function App() {
                 onAddToCart={handleAddToCart}
                 onAddToWishlist={handleAddToWishlist}
                 wishlist={wishlist}
+                products={dbProducts}
               />
             )}
             {activePage === 'about' && <About />}

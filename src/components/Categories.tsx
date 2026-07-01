@@ -1,14 +1,21 @@
 import { motion } from 'motion/react';
 import { ArrowRight, Leaf, Sparkles, ChefHat } from 'lucide-react';
-import { PageType } from '../types';
-import { CATEGORIES, PRODUCTS } from '../data';
+import { PageType, Product } from '../types';
+import { CATEGORIES as FALLBACK_CATEGORIES, PRODUCTS as FALLBACK_PRODUCTS } from '../data';
 
 interface CategoriesProps {
   setActivePage: (page: PageType) => void;
   setSelectedCategoryId: (id: string | null) => void;
+  categories?: typeof FALLBACK_CATEGORIES;
+  products?: Product[];
 }
 
-export default function Categories({ setActivePage, setSelectedCategoryId }: CategoriesProps) {
+export default function Categories({
+  setActivePage,
+  setSelectedCategoryId,
+  categories = FALLBACK_CATEGORIES,
+  products = FALLBACK_PRODUCTS,
+}: CategoriesProps) {
   const handleCategoryClick = (id: string) => {
     setSelectedCategoryId(id);
     setActivePage('shop');
@@ -29,9 +36,9 @@ export default function Categories({ setActivePage, setSelectedCategoryId }: Cat
 
       {/* Grid List */}
       <div className="space-y-16">
-        {CATEGORIES.map((cat, idx) => {
+        {categories.map((cat, idx) => {
           const isEven = idx % 2 === 0;
-          const catProducts = PRODUCTS.filter((p) => p.category === cat.id).slice(0, 3);
+          const catProducts = products.filter((p) => p.category === cat.id).slice(0, 3);
 
           return (
             <div

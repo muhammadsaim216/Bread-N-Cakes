@@ -1,11 +1,29 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Star, Camera, Heart, Sparkles, SlidersHorizontal } from 'lucide-react';
-import { GALLERY_ITEMS } from '../data';
+import { GALLERY_ITEMS as FALLBACK_GALLERY } from '../data';
 
 export default function Gallery() {
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [galleryItems, setGalleryItems] = useState<typeof FALLBACK_GALLERY>(FALLBACK_GALLERY);
+
+  useEffect(() => {
+    async function fetchGallery() {
+      try {
+        const res = await fetch('/api/gallery');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.gallery && data.gallery.length > 0) {
+            setGalleryItems(data.gallery);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch gallery from DB:', err);
+      }
+    }
+    fetchGallery();
+  }, []);
 
   const filters = [
     { label: 'All Creations', value: 'all' },
@@ -15,9 +33,9 @@ export default function Gallery() {
   ];
 
   const filteredItems = useMemo(() => {
-    if (selectedFilter === 'all') return GALLERY_ITEMS;
-    return GALLERY_ITEMS.filter((item) => item.category === selectedFilter);
-  }, [selectedFilter]);
+    if (selectedFilter === 'all') return galleryItems;
+    return galleryItems.filter((item) => item.category === selectedFilter);
+  }, [selectedFilter, galleryItems]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" id="gallery-view">
@@ -119,7 +137,7 @@ export default function Gallery() {
               />
               <div className="bg-white p-4 flex justify-between items-center">
                 <p className="font-serif text-sm font-bold text-stone-900">
-                  {GALLERY_ITEMS.find((g) => g.image === selectedImage)?.title || 'Artisan Custom Creation'}
+                  {galleryItems.find((g) => g.image === selectedImage)?.title || 'Artisan Custom Creation'}
                 </p>
                 <div className="flex items-center space-x-1 font-mono text-xs text-orange-600">
                   <Star size={12} className="fill-orange-600" />

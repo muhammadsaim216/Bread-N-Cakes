@@ -2,39 +2,32 @@ import { Product, BlogPost, Review, Order } from './types';
 
 export const CATEGORIES = [
   {
-    id: 'artisanal-breads',
-    name: 'Artisanal Breads',
-    description: 'Freshly baked sourdough, baguettes, and hearty loaves using traditional slow-fermentation methods.',
-    image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&q=80&w=600',
-    count: 12
-  },
-  {
-    id: 'decadent-cakes',
-    name: 'Decadent Cakes',
+    id: 'cakes',
+    name: 'Cakes',
     description: 'Exquisite multi-layer cakes, custom birthday treats, and velvety creations for celebrations.',
     image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=600',
-    count: 18
+    count: 3
   },
   {
-    id: 'croissants-pastries',
-    name: 'Croissants & Pastries',
+    id: 'breads',
+    name: 'Breads',
+    description: 'Freshly baked sourdough, baguettes, and hearty loaves using traditional slow-fermentation methods.',
+    image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&q=80&w=600',
+    count: 1
+  },
+  {
+    id: 'pastries',
+    name: 'Pastries',
     description: 'Buttery, flaky croissants, danishes, and elegant sweet tarts prepared fresh every morning.',
     image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&q=80&w=600',
-    count: 15
+    count: 4
   },
   {
-    id: 'gluten-free',
-    name: 'Gluten-Free & Dietary',
-    description: 'Deliciously crafted eggless, vegan, and gluten-free treats that compromise nothing on flavor.',
-    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=600',
-    count: 8
-  },
-  {
-    id: 'festive-specials',
-    name: 'Festive Specials',
-    description: 'Seasonal favorites, holiday treats, and limited-run baked goods for special moments.',
-    image: 'https://images.unsplash.com/photo-1512223792601-592a9809eed4?auto=format&fit=crop&q=80&w=600',
-    count: 6
+    id: 'custom-orders',
+    name: 'Custom Orders',
+    description: 'Work with our master bakers to craft the perfect custom cake, bespoke pastry selection, or corporate gift packages.',
+    image: 'https://images.unsplash.com/photo-1535141192574-5d4897c13636?auto=format&fit=crop&q=80&w=600',
+    count: 4
   }
 ];
 
@@ -42,7 +35,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '1',
     name: 'Signature Wild Sourdough',
-    category: 'artisanal-breads',
+    category: 'breads',
     price: 8.50,
     description: 'Our standard 36-hour slow-fermented classic country sourdough with a blistered crust and open, airy crumb.',
     longDescription: 'Crafted using our 50-year-old sourdough starter "Gertrude," this loaf is a testament to the art of traditional baking. We use only organic, stone-ground high-protein flour, water, and sea salt. The extended cold fermentation process breaks down gluten, making it gentler on digestion and infusing it with a complex, mildly tangy flavor profile that pairs wonderfully with salted butter or gourmet cheeses.',
@@ -70,7 +63,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '2',
     name: 'Triple Chocolate Ganache Cake',
-    category: 'decadent-cakes',
+    category: 'cakes',
     price: 45.00,
     description: 'Decadent dark chocolate sponge layered with creamy milk chocolate mousse and glazed with shiny dark chocolate ganache.',
     longDescription: 'The ultimate celebration for chocolate purists. This cake features three layers of moist, dark Valrhona chocolate cake, filled with airy Belgian milk chocolate mousse, and enveloped in a silky, rich 70% dark chocolate ganache glaze. Decorated elegantly with hand-rolled chocolate curls and a touch of edible gold leaf.',
@@ -98,7 +91,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '3',
     name: 'French Butter Almond Croissant',
-    category: 'croissants-pastries',
+    category: 'pastries',
     price: 5.25,
     description: 'Double-baked traditional French croissant filled with sweet almond frangipane and topped with toasted flaked almonds.',
     longDescription: 'Our signature croissant is laminated with premium AOP Charentes-Poitou French butter over three days to create 27 crispy, airy layers. For our Almond version, we slice the fresh baked croissants, brush them lightly with rum syrup, stuff them with our homemade vanilla bean almond frangipane, and bake them a second time until golden and crunchy. Finished with powdered sugar.',
@@ -118,12 +111,13 @@ export const PRODUCTS: Product[] = [
       carbs: '31g',
       protein: '7g'
     },
-    featured: true
+    featured: true,
+    isNew: true
   },
   {
     id: '4',
     name: 'Gluten-Free Raspberry Velvet Cake',
-    category: 'gluten-free',
+    category: 'cakes',
     price: 48.00,
     description: 'Rich, moist gluten-free cake infused with real raspberry puree, layered with light vanilla cream cheese frosting.',
     longDescription: 'A heavenly dessert designed for everyone. We use a proprietary blend of almond flour, coconut flour, and sweet white rice flour to achieve a incredibly tender, moist crumb. No artificial coloring here—the beautiful red hue comes entirely from pureed fresh organic raspberries and beet juice concentrate. Layered with luxury whipped organic cream cheese frosting.',
@@ -143,15 +137,16 @@ export const PRODUCTS: Product[] = [
       carbs: '34g',
       protein: '6g'
     },
-    featured: false
+    featured: false,
+    isNew: true
   },
   {
     id: '5',
     name: 'Zesty Lemon Elderflower Tart',
-    category: 'croissants-pastries',
+    category: 'pastries',
     price: 6.00,
     description: 'Crisp shortbread pastry shell filled with tangy lemon-lime curd, infused with sweet elderflower syrup.',
-    longDescription: 'A bright, floral, and incredibly refreshing pastry. Our sweet pâte sablée crust is baked to crisp, golden-brown perfection, then filled with a creamy, intensely zesty lemon curd that has been delicately infused with elderflower cordial. Beautifully garnished with piped Swiss meringue kisses, candied lemon peel, and organic edible flower petals.',
+    longDescription: 'A bright, floral, and intensely refreshing pastry. Our sweet pâte sablée crust is baked to crisp, golden-brown perfection, then filled with a creamy, intensely zesty lemon curd that has been delicately infused with elderflower cordial. Beautifully garnished with piped Swiss meringue kisses, candied lemon peel, and organic edible flower petals.',
     image: 'https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&q=80&w=800',
     images: [
       'https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&q=80&w=800',
@@ -173,7 +168,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '6',
     name: 'Vegan Salted Pecan Cinnamon Roll',
-    category: 'croissants-pastries',
+    category: 'pastries',
     price: 5.50,
     description: 'Soft, fluffy vegan brioche dough rolled with Ceylon cinnamon, organic brown sugar, topped with cream cheese glaze and roasted pecans.',
     longDescription: 'Our award-winning giant cinnamon rolls are 100% plant-based! We use coconut oil and premium almond milk to make a rich, pillow-soft dough. Every roll is layered generously with aromatic ground Ceylon cinnamon and caramelized dark brown sugar, then topped with a luscious glaze made from house-made vegan cream cheese, finished with toasted salted pecans.',
@@ -198,7 +193,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '7',
     name: 'Eggless Pistachio Cardamom Dream',
-    category: 'decadent-cakes',
+    category: 'cakes',
     price: 49.00,
     description: 'Delicate eggless cake with roasted Sicilian pistachios, scented with freshly ground green cardamom and rosewater syrup.',
     longDescription: 'An aromatic cake celebrating Middle Eastern flavors, made completely egg-free using organic Greek yogurt as a binder. The cake is incredibly moist and dense, infused with ground premium green cardamom pods, layered with a silky Sicilian pistachio buttercream and brushed with a subtle organic damask rosewater glaze. Gilded with crushed vibrant green pistachios and dried culinary rose petals.',
@@ -223,7 +218,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '8',
     name: 'Spiced Pumpkin Bourbon Pie',
-    category: 'festive-specials',
+    category: 'pastries',
     price: 28.00,
     description: 'Holiday special silky smooth roasted pumpkin filling spiced with ginger, clove, and nutmeg, spiked with high-quality bourbon in a flaky butter crust.',
     longDescription: 'Our signature autumn pie! We roast organic sugar pumpkins in-house until caramelized, then blend them with rich cream, farm-fresh eggs, our custom spice mix, and a splash of Kentucky straight bourbon whiskey. Baked in our hyper-flaky 100-layer butter crust. Served with a piping of maple whipped cream.',
@@ -244,6 +239,111 @@ export const PRODUCTS: Product[] = [
       protein: '4.5g'
     },
     featured: false
+  },
+  {
+    id: '9',
+    name: 'Bespoke Celebration Cake Builder',
+    category: 'custom-orders',
+    price: 65.00,
+    description: 'Design your dream cake. Select your sponges, premium fillings, hand-piped frostings, and custom birthday lettering.',
+    longDescription: 'Collaborate with our master cake designers to create the perfect centerpiece for your wedding, birthday, or graduation. Choose from organic vanilla sponge, decadent dark chocolate, or moist red velvet. Pair them with fresh fruit preserves, Belgian chocolate mousse, or lemon curd, and specify your exact color palette and hand-written messaging.',
+    image: 'https://images.unsplash.com/photo-1535141192574-5d4897c13636?auto=format&fit=crop&q=80&w=800',
+    images: [
+      'https://images.unsplash.com/photo-1535141192574-5d4897c13636?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1464349110291-1413b70d763e?auto=format&fit=crop&q=80&w=800'
+    ],
+    dietary: ['organic'],
+    rating: 5.0,
+    reviewsCount: 18,
+    sizes: ['6-inch (Serves 6-8)', '8-inch (Serves 10-12)', '10-inch (Serves 16-20)', '12-inch Tiered (Serves 30+)'],
+    flavors: ['Vanilla Bean & Strawberry', 'Double Chocolate Fudge', 'Red Velvet Cream Cheese', 'Lemon Raspberry Swirl'],
+    ingredients: ['Organic Wheat Flour', 'Pasture-Raised Eggs', 'Whipped Cream', 'Cane Sugar', 'Butter', 'Natural Madagascar Vanilla Extracts'],
+    nutritionalInfo: {
+      calories: 290,
+      fat: '11g',
+      carbs: '36g',
+      protein: '4.8g'
+    },
+    featured: true,
+    bestSeller: true
+  },
+  {
+    id: '10',
+    name: 'Bespoke Pastry Catering Platter',
+    category: 'custom-orders',
+    price: 55.00,
+    description: 'A custom curated platter of 12 or 24 of our signature croissants, danishes, tarts, and morning buns for your event.',
+    longDescription: 'Impress your guests, coworkers, or clients with a gorgeous display of our finest freshly baked French pastries. Placed beautifully in our wooden catering trays. You can select an all-sweet collection, savory & flaky bakes, or a baker\'s selected assortment. Baked fresh at 3:00 AM on the day of your event.',
+    image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&q=80&w=800',
+    images: [
+      'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&q=80&w=800'
+    ],
+    dietary: [],
+    rating: 4.9,
+    reviewsCount: 22,
+    sizes: ['Small Platter (12 Pastries)', 'Large Platter (24 Pastries)'],
+    flavors: ["Baker's Assorted Mix", "Sweet Pastry Focused", "Savory & Flaky Mix"],
+    ingredients: ['French Pastry Flour', 'AOP Charentes Butter', 'Fresh Fruits', 'Vanilla Custard', 'Sourdough Starter'],
+    nutritionalInfo: {
+      calories: 250,
+      fat: '12g',
+      carbs: '29g',
+      protein: '5.0g'
+    },
+    featured: true,
+    isNew: true
+  },
+  {
+    id: '11',
+    name: 'Custom Wedding Tasting Consultation',
+    category: 'custom-orders',
+    price: 40.00,
+    description: 'Order a custom curated wedding cake tasting box featuring 4 cake flavors and 4 frostings, paired with a 30-min master baker consultation.',
+    longDescription: 'Plan your magical wedding cake with confidence. This package includes a premium tasting box containing individual slices of our four most celebrated wedding cake recipes, along with samples of fillings and gourmet frostings. Comes with a private 30-minute virtual or in-person design consultation with our Head Pastry Chef to map out your dream cake tiering, styling, and floral details.',
+    image: 'https://images.unsplash.com/photo-1557925923-cd4648e21187?auto=format&fit=crop&q=80&w=800',
+    images: [
+      'https://images.unsplash.com/photo-1557925923-cd4648e21187?auto=format&fit=crop&q=80&w=800'
+    ],
+    dietary: ['organic'],
+    rating: 5.0,
+    reviewsCount: 14,
+    sizes: ['Tasting Box (For 2)', 'Tasting Box (For 4)'],
+    flavors: ['Premium Floral Flavor Pack', 'Classic Decadence Pack'],
+    ingredients: ['Varies by cake selection'],
+    nutritionalInfo: {
+      calories: 210,
+      fat: '8g',
+      carbs: '30g',
+      protein: '3.5g'
+    },
+    featured: false,
+    isNew: true
+  },
+  {
+    id: '12',
+    name: 'Artisanal Bread Gift Basket',
+    category: 'custom-orders',
+    price: 35.00,
+    description: 'A beautifully arranged rustic basket containing 3 signature loaves of sourdough, artisanal preserves, and whipped specialty butter.',
+    longDescription: 'The perfect gourmet gift for the food lover in your life. This hand-woven picnic basket is packed with a freshly baked Classic Country Sourdough, a Rosemary Garlic Sourdough, a Cranberry Walnut Sourdough, plus a jar of house-made organic strawberry-basil preserve and a tub of french sea-salted whipped butter.',
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=800',
+    images: [
+      'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=800'
+    ],
+    dietary: ['vegan', 'organic'],
+    rating: 4.9,
+    reviewsCount: 31,
+    sizes: ['Standard Gift Basket', 'Deluxe Celebration Basket'],
+    flavors: ['Classic Sourdough Mix', 'Herbs & Fruit Infused Mix'],
+    ingredients: ['Organic Wheat Flour', 'French Butter', 'Fresh Strawberries', 'Basil', 'French Sea Salt'],
+    nutritionalInfo: {
+      calories: 190,
+      fat: '2.5g',
+      carbs: '38g',
+      protein: '5.8g'
+    },
+    featured: false,
+    bestSeller: true
   }
 ];
 

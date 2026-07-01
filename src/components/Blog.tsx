@@ -1,15 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BookOpen, User, Calendar, Clock, ArrowRight, Share2, Search, ArrowLeft } from 'lucide-react';
-import { BLOG_POSTS } from '../data';
+import { BLOG_POSTS as FALLBACK_BLOGS } from '../data';
 import { BlogPost } from '../types';
 import { toast } from '../utils/toast';
 
 export default function Blog() {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(FALLBACK_BLOGS);
 
-  const filteredPosts = BLOG_POSTS.filter((post) =>
+  useEffect(() => {
+    async function fetchBlogs() {
+      try {
+        const res = await fetch('/api/blogs');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.blogs && data.blogs.length > 0) {
+            setBlogPosts(data.blogs);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch blogs from DB:', err);
+      }
+    }
+    fetchBlogs();
+  }, []);
+
+  const filteredPosts = blogPosts.filter((post) =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.category.toLowerCase().includes(searchQuery.toLowerCase())
